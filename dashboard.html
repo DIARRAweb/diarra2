@@ -14910,13 +14910,21 @@ window.purchaseDataBundle = async function(){
     const bundleLabel = selected ? selected.dataset.label : "";
     const reason = document.getElementById("dataReason").value.trim();
 
+    const cleanOperator = String(operator || "").toUpperCase();
+
     const providerId =
-      operator === "Malitel" ? 1189 :
-      operator === "Orange" ? 1132 :
+      cleanOperator.includes("MALITEL") ? 1189 :
+      cleanOperator.includes("ORANGE") ? 1132 :
       null;
 
     if(!operator || !providerId || !phone || amount <= 0){
-      alert("❌ Remplis correctement les champs.");
+      alert(
+        "❌ Remplis correctement les champs.\n\n" +
+        "Opérateur: " + operator + "\n" +
+        "Provider ID: " + providerId + "\n" +
+        "Téléphone: " + phone + "\n" +
+        "Montant: " + amount
+      );
       return;
     }
 
@@ -14946,6 +14954,7 @@ window.purchaseDataBundle = async function(){
       userPhone,
       operator,
       providerId,
+      serviceType: "mobile_data",
       recipientPhone: phone,
       amount,
       bundleLabel,
