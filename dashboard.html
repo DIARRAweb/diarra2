@@ -9359,13 +9359,11 @@ Modifier mot de passe
 
       <div class="input-group">
         <label>📦 Forfait données</label>
-        <select id="dataBundle">
-          <option value="">Choisir un forfait</option>
-          <option value="500" data-label="Petit forfait data">500 FCFA</option>
-          <option value="1000" data-label="Forfait data standard">1 000 FCFA</option>
-          <option value="2000" data-label="Forfait data moyen">2 000 FCFA</option>
-          <option value="5000" data-label="Grand forfait data">5 000 FCFA</option>
-        </select>
+        <input
+          id="dataBundle"
+          type="number"
+          placeholder="Ex: 500, 1000, 2000"
+        />
       </div>
 
       <div class="input-group">
@@ -14874,9 +14872,7 @@ function updateDataSummary(){
   const operator = dataOperator.value;
   const phone = dataPhone.value.trim();
   const amount = Number(dataBundle.value);
-  const selected = dataBundle.options[dataBundle.selectedIndex];
-  const bundleLabel = selected ? selected.dataset.label : "";
-
+  const bundleLabel = amount.toLocaleString() + " FCFA";
   if(operator && phone && amount > 0){
     dataSummary.classList.add("show");
     dataSummary.innerHTML = `
@@ -14954,7 +14950,6 @@ window.purchaseDataBundle = async function(){
       userPhone,
       operator,
       providerId,
-      serviceType: "mobile_data",
       recipientPhone: phone,
       amount,
       bundleLabel,
