@@ -14872,7 +14872,8 @@ function updateDataSummary(){
   const operator = dataOperator.value;
   const phone = dataPhone.value.trim();
   const amount = Number(dataBundle.value);
-  const bundleLabel = amount.toLocaleString() + " FCFA";
+  const bundleLabel = amount > 0 ? amount.toLocaleString() + " FCFA" : "";
+
   if(operator && phone && amount > 0){
     dataSummary.classList.add("show");
     dataSummary.innerHTML = `
@@ -14902,8 +14903,7 @@ window.purchaseDataBundle = async function(){
     const operator = dataOperator.value;
     const phone = normalizeReceiverPhoneSmart(dataPhone.value.trim());
     const amount = Number(dataBundle.value);
-    const selected = dataBundle.options[dataBundle.selectedIndex];
-    const bundleLabel = selected ? selected.dataset.label : "";
+    const bundleLabel = amount.toLocaleString() + " FCFA";
     const reason = document.getElementById("dataReason").value.trim();
 
     const cleanOperator = String(operator || "").toUpperCase();
