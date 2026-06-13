@@ -9359,11 +9359,9 @@ Modifier mot de passe
 
       <div class="input-group">
         <label>📦 Forfait données</label>
-        <input
-          id="dataBundle"
-          type="number"
-          placeholder="Ex: 500, 1000, 2000"
-        />
+        <select id="dataBundle">
+            <option value="">Choisir d’abord un opérateur</option>
+        </select>
       </div>
 
       <div class="input-group">
@@ -14868,11 +14866,39 @@ const dataPhone = document.getElementById("dataPhone");
 const dataBundle = document.getElementById("dataBundle");
 const dataSummary = document.getElementById("dataSummary");
 
+const DATA_BUNDLES = {
+  MALITEL: [298.2, 399.29, 500.37, 798.57, 1400.03, 1501.12, 1602.2, 2001.49, 2597.89, 5499.05, 11998.84, 16997.51],
+  ORANGE_MALI: [277.75, 555.5, 1116.05, 2227.05, 2237.15, 5570.15, 11140.3]
+};
+
+function formatDataAmount(amount){
+  return String(amount).replace(".", ",");
+}
+
+function loadDataBundles(){
+  const operator = dataOperator.value;
+
+  dataBundle.innerHTML = `<option value="">Choisir un montant</option>`;
+
+  if(!operator || !DATA_BUNDLES[operator]){
+    dataBundle.innerHTML = `<option value="">Choisir d’abord un opérateur</option>`;
+    return;
+  }
+
+  DATA_BUNDLES[operator].forEach(amount => {
+    dataBundle.innerHTML += `
+      <option value="${amount}">
+        ${formatDataAmount(amount)} FCFA
+      </option>
+    `;
+  });
+}
+
 function updateDataSummary(){
   const operator = dataOperator.value;
   const phone = dataPhone.value.trim();
   const amount = Number(dataBundle.value);
-  const bundleLabel = amount > 0 ? amount.toLocaleString() + " FCFA" : "";
+  const bundleLabel = amount > 0 ? formatDataAmount(amount) + " FCFA" : "";
 
   if(operator && phone && amount > 0){
     dataSummary.classList.add("show");
@@ -14881,7 +14907,7 @@ function updateDataSummary(){
       📡 Opérateur : <b>${operator}</b><br>
       📞 Numéro : <b>${phone}</b><br>
       📦 Forfait : <b>${bundleLabel}</b><br>
-      💰 Montant : <b>${amount.toLocaleString()} FCFA</b>
+      💰 Montant : <b>${bundleLabel}</b>
     `;
   }else{
     dataSummary.classList.remove("show");
@@ -14889,9 +14915,13 @@ function updateDataSummary(){
   }
 }
 
-dataOperator.addEventListener("input", updateDataSummary);
+dataOperator.addEventListener("change", () => {
+  loadDataBundles();
+  updateDataSummary();
+});
+
 dataPhone.addEventListener("input", updateDataSummary);
-dataBundle.addEventListener("input", updateDataSummary);
+dataBundle.addEventListener("change", updateDataSummary);
 
 window.purchaseDataBundle = async function(){
   const dataBtn = document.querySelector("#dataPanel .send-btn");
@@ -14903,7 +14933,7 @@ window.purchaseDataBundle = async function(){
     const operator = dataOperator.value;
     const phone = normalizeReceiverPhoneSmart(dataPhone.value.trim());
     const amount = Number(dataBundle.value);
-    const bundleLabel = amount.toLocaleString() + " FCFA";
+    const bundleLabel = formatDataAmount(amount) + " FCFA";
     const reason = document.getElementById("dataReason").value.trim();
 
     const cleanOperator = String(operator || "").toUpperCase();
